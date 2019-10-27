@@ -1,0 +1,50 @@
+
+
+class maze:
+
+    starting_position_char = "Y"
+    goal_position_char = "X"
+    
+    def __init__(self, path):
+        self.maze = self.readMaze(path)
+        self.current_starting_position = self.getStartingPosition()
+        self.goal_position = self.getGoalPosition()
+
+    def readMaze(path):
+        maze = []
+        mazeFile = open(path, "r")
+        columns = mazeFile.readlines()
+        for column in columns:
+            column = column.strip()
+            row = [i for i in column]
+            maze.append(row)
+        return maze
+
+    def getPositionOf(char):
+        for i in len(self.maze):
+            for j in len(self.maze[0]):
+                if self.maze[i][j] == char:
+                    return i, j
+
+    def getStartingPosition():
+        return getPositionOf(starting_position_char)
+
+    def getGoalPosition():
+        return getPositionOf(goal_position_char)
+
+    
+
+def intialize_maze(path):
+    
+
+if __name__ == "__main__":
+    
+    maze =[]
+    readMaze(maze, "maze.txt")
+
+
+    for i in maze:
+        print("".join(i))
+
+    print len(maze)
+    print len(maze[0])
