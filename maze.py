@@ -1,5 +1,4 @@
 
-
 class Maze:
 
     starting_position_char = "Y"
@@ -25,13 +24,17 @@ class Maze:
             self.current_position_x = self.current_position_x + 1
         else:
             status = "WALL"
+
+        if self.current_position_y == self.goal_position[0] and self.current_position_x == self.goal_position[1]:
+            status = "GOAL"
+
         return status
 
     def checkLegalMove(self, pos_y, pos_x):
 
-        if pos_y > len(self.maze[0]): return False
-        if pos_x > len(self.maze): return False
-        
+        if pos_y > len(self.maze): return False
+        if pos_x > len(self.maze[0]): return False
+
         if self.maze[pos_y][pos_x] == " ":
             return True
         elif self.maze[pos_y][pos_x] == self.starting_position_char:
@@ -78,24 +81,3 @@ class Maze:
     def getGoalPosition(self):
 
         return self.goal_position
-
-
-if __name__ == "__main__":
-    
-    maze = Maze("maze.txt")
-
-    mazerep = maze.getMaze()
-
-    for i in mazerep:
-        print("".join(i))
-
-    print len(mazerep)
-    print len(mazerep[0])
-    print maze.getCurrentPosition()
-    print maze.handleMove("UP")
-    print maze.getCurrentPosition()
-    print maze.handleMove("RIGHT")
-    print maze.getCurrentPosition()
-    print maze.handleMove("RIGHT")
-    print maze.getCurrentPosition()
-    print maze.getGoalPosition()
