@@ -7,7 +7,9 @@ class Maze:
     def __init__(self, path):
 
         self.maze = self.readMaze(path)
-        self.current_position_y, self.current_position_x = self.setStartingPosition()
+        self.start_y, self.start_x = self.setStartingPosition()
+        self.current_position_y = self.start_y
+        self.current_position_x = self.start_x
         self.goal_position = self.setGoalPosition()
 
     def handleMove(self, move):
@@ -27,7 +29,9 @@ class Maze:
 
         if self.current_position_y == self.goal_position[0] and self.current_position_x == self.goal_position[1]:
             status = "GOAL"
-
+            self.current_position_y = self.start_y
+            self.current_position_x = self.start_x
+            
         return status
 
     def checkLegalMove(self, pos_y, pos_x):
