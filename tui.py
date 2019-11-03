@@ -20,7 +20,7 @@ class Tui:
 
     def recieveInput(self):
 
-        print "1 = left, 2 = down, 3 = up and 4 = right. Waiting for input:"
+        print("1 = left, 2 = down, 3 = up and 4 = right. Waiting for input:")
         try:
             player_input = input()
         except:
@@ -31,7 +31,7 @@ class Tui:
         elif player_input == 3: return "UP"
         elif player_input == 4: return "RIGHT"
         else:
-            print "Wrong Input; try again"
+            print("Wrong Input; try again")
             return self.recieveInput()
         
 

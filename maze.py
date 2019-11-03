@@ -15,7 +15,12 @@ class Maze:
     def handleMove(self, move):
 
         status = "OK"
-
+        
+        if move == 1: move = "LEFT"
+        elif move == 2: move = "DOWN"
+        elif move == 3: move = "UP"
+        else: move = "RIGHT"
+        
         if move == "UP" and self.checkLegalMove(self.current_position_y - 1, self.current_position_x):
             self.current_position_y = self.current_position_y - 1 
         elif move == "DOWN" and self.checkLegalMove(self.current_position_y + 1, self.current_position_x):
@@ -26,17 +31,19 @@ class Maze:
             self.current_position_x = self.current_position_x + 1
         else:
             status = "WALL"
-
+            
         if self.current_position_y == self.goal_position[0] and self.current_position_x == self.goal_position[1]:
             status = "GOAL"
+            print(self.current_position_x,self.current_position_y)
             self.current_position_y = self.start_y
             self.current_position_x = self.start_x
-            
+            print(self.current_position_x,self.current_position_y)            
         return status
 
     def checkLegalMove(self, pos_y, pos_x):
 
-        if pos_y > len(self.maze): return False
+        
+        if pos_y >= len(self.maze): return False
         if pos_x > len(self.maze[0]): return False
 
         if self.maze[pos_y][pos_x] == " ":

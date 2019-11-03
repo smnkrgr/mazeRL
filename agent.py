@@ -12,7 +12,7 @@ class Agent:
         self.Q_dimensions = [len(self.maze.getMaze()), len(self.maze.getMaze()[0]), actions] 
         self.epsilon = epsilon
         
-        if q_path == None: self.Q = self.initializeFieldActionArray(0.0)
+        if q_path == None: self.Q = self.initializeFieldActionArray(1.0)
         else: self.Q = self.readFromCSV(q_path)
         
         if n_path == None: self.N = self.initializeFieldActionArray(0)
@@ -23,14 +23,16 @@ class Agent:
         for i in range(games):
             status = "OK"
             executed_actions = []
-
+            count = 0
             while status != "GOAL":
                 pos_y, pos_x = self.maze.getCurrentPosition()
                 action = self.chooseAction(pos_y, pos_x)
                 
                 status = self.maze.handleMove(action)
                 executed_actions.append([pos_y, pos_x, action])
-
+                count += 1
+                if (count%100000 == 0):
+                    print(pos_x, pos_y, count)
                 self.N[pos_y][pos_x][action-1] += 1
                 self.Q[pos_y][pos_x][action-1] += ((self.calcReward(status) - self.Q[pos_y][pos_x][action-1])
                                                    * (1.0 / self.N[pos_y][pos_x][action-1]))
@@ -49,12 +51,12 @@ class Agent:
             y, x = self.maze.getCurrentPosition()
             tui.draw(self.maze.getMaze(), y, x)
             status = self.maze.handleMove(self.chooseAction(y, x))
-
+            
     def calcReward(self, status):
 
         if status == "OK": return 0
         elif status == "WALL": return -1
-        elif status == "GOAL": return 1
+        elif status == "GOAL": return 100
         
     def chooseAction(self, y, x):
 
@@ -98,6 +100,11 @@ class Agent:
             for row in data_reader:
                 rows.append(row)
                 
+            for row in rows:
+                #TODO range() to #actions
+                for i in range(4):
+                    row[i] = float(row[i])
+                
             for i in range(self.Q_dimensions[0]):
                 row = []
                 for j in range(self.Q_dimensions[1]):
@@ -110,9 +117,9 @@ class Agent:
 if __name__ == '__main__':
 
     maze = Maze("maze.txt")
-    agent = Agent(maze, 4, 0.1)
-    #agent.simulate(10)
-    agent.demonstrate()
-    
+    agent = Agent(maze, 4, 0.8, "test")
+    agent.simulate(50)
+#    agent.demonstrate()
+    agent.saveQtoCSV("test")
 
             

@@ -12,5 +12,5 @@ if __name__ == "__main__":
         tui.draw(maze.getMaze(), pos_y, pos_x)
         status = maze.handleMove(tui.recieveInput())
 
-    print "finished"
+    print("finished")
     
