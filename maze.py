@@ -34,10 +34,8 @@ class Maze:
             
         if self.current_position_y == self.goal_position[0] and self.current_position_x == self.goal_position[1]:
             status = "GOAL"
-            print(self.current_position_x,self.current_position_y)
             self.current_position_y = self.start_y
-            self.current_position_x = self.start_x
-            print(self.current_position_x,self.current_position_y)            
+            self.current_position_x = self.start_x            
         return status
 
     def checkLegalMove(self, pos_y, pos_x):

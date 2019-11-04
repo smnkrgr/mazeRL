@@ -3,6 +3,7 @@ from tui import Tui
 import csv
 import random
 import numpy as np
+import time
 
 class Agent:
 
@@ -20,10 +21,12 @@ class Agent:
 
     def simulate(self, games = 1):
 
+        game_count = 1
         for i in range(games):
             status = "OK"
             executed_actions = []
             count = 0
+            print("Start Game: ", game_count)
             while status != "GOAL":
                 pos_y, pos_x = self.maze.getCurrentPosition()
                 action = self.chooseAction(pos_y, pos_x)
@@ -32,11 +35,13 @@ class Agent:
                 executed_actions.append([pos_y, pos_x, action])
                 count += 1
                 if (count%100000 == 0):
-                    print(pos_x, pos_y, count)
+                    print("X: ", pos_x, "Y: " , pos_y,"Game No.: " , game_count , "Current step count: " , count)
                 self.N[pos_y][pos_x][action-1] += 1
                 self.Q[pos_y][pos_x][action-1] += ((self.calcReward(status) - self.Q[pos_y][pos_x][action-1])
                                                    * (1.0 / self.N[pos_y][pos_x][action-1]))
 
+            print("Finished Game: ", game_count)
+            game_count += 1
             average_reward = 1.0 / len(executed_actions)
             for i in range(len(executed_actions)):
                 y, x, action = executed_actions[i]
@@ -116,10 +121,13 @@ class Agent:
 
 if __name__ == '__main__':
 
+    games = 50
     maze = Maze("maze.txt")
     agent = Agent(maze, 4, 0.8, "test")
-    agent.simulate(50)
-#    agent.demonstrate()
+    currentTime = time.time()
+    agent.simulate(games)
+    print("Time to finish ", games, " games in min.: ", (time.time() - currentTime)/60 )
+    #    agent.demonstrate()
     agent.saveQtoCSV("test")
 
             
