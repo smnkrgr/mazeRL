@@ -6,7 +6,7 @@ import numpy as np
 import time
 
 
-class geneticAgent:
+class GeneticAgent:
 
     def __init__(self, maze, actions, epsilon, population_size, steps, genes_path = None):
 
@@ -17,16 +17,17 @@ class geneticAgent:
 
         self.finishing_positions = self.initializeFinishingPositions(population_size)
         self.fitness = [0] * population_size
+        self.steps = steps
         
-        if genes_path == None: self.population = self.initializePopulation(population_size, steps)
+        if genes_path == None: self.population = self.initializePopulation(population_size)
         else: self.population = self.readFromCSV(genes_path)
 
-    def initializePopulation(self, size, steps):
+    def initializePopulation(self, size):
 
         pop = []
 
         for i in range(size):
-            pop.append([random.randrange(100)] * steps)
+            pop.append([random.randrange(100)] * self.steps)
 
         return pop
 
@@ -39,16 +40,18 @@ class geneticAgent:
                            (self.goal_x - self.finishing_positions[i][1])^2)      
 
             # bonus for reaching the goal to encourage shorter paths
-            if distance == 0:
-                bonus = "drei melonen" 
+            if distance == 0: bonus = self.steps - self.finishing_positions[i][2]
+            else: bonus = 0
+            
+            self.fitness[i] = 1.0/(distance + 1) + bonus
             
         return
 
-    def initializeFinishingPositions(self, size):
+    def initializeFinishingPositionsAndEndSteps(self, size):
 
         positions = []
 
         for i in range(size):
-            positions.append([0,0])
+            positions.append([0,0,0])
 
         return positions
