@@ -5,7 +5,7 @@ import random
 import numpy as np
 import time
 
-class Agent:
+class qAgent:
 
     def __init__(self, maze, actions, epsilon, alpha, discount, q_path = None, n_path = None):
         
@@ -146,8 +146,8 @@ if __name__ == '__main__':
     epsilon = 0.1
     alpha = 0.8
     discount = 1
-    maze = Maze("maze.txt")
-    agent = Agent(maze, 4, epsilon, alpha, discount)
+    maze = Maze("maze_levels/maze.txt")
+    agent = qAgent(maze, 4, epsilon, alpha, discount)
     currentTime = time.time()
     average_reward = agent.simulate(games)
     print("Time to finish ", games, " games in min.: ", (time.time() - currentTime)/60 )
