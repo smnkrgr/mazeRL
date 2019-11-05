@@ -55,3 +55,29 @@ class GeneticAgent:
             positions.append([0,0,0])
 
         return positions
+
+    def savePopulationToCSV(self, path):
+
+        with open(path, mode='w') as data_file:
+            data_writer = csv.writer(data_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            for i in range(len(self.population)):
+                data_writer.writerow(self.population[i])
+
+    def readPopulationFromCSV(self, path):
+
+        population = []
+        
+        with open(path) as data_file:
+            data_reader = csv.reader(data_file, delimiter=',')
+
+            for row in data_reader:
+                population.append(row)
+
+        for genotype in population:
+            genotype = int(genotype)
+        
+        return population
+
+    
+                
+         

@@ -23,32 +23,34 @@ class Agent:
 
     def simulate(self, games = 1):
 
+        average_rewards_list = []
         game_count = 1
+
         for i in range(games):
+
             status = "OK"
-            #executed_actions = []
             count = 0
+            reward_list = []
+
             print("Start Game: ", game_count)
+
             while status != "GOAL":
                 pos_y, pos_x = self.maze.getCurrentPosition()
                 action = self.chooseAction(pos_y, pos_x)
                 
                 status = self.maze.handleMove(action)
-                #executed_actions.append([pos_y, pos_x, action])
+                reward_list.append(self.calcReward(status))
+
                 count += 1
                 if (count%100000 == 0):
                     print("X: ", pos_x, "Y: " , pos_y,"Game No.: " , game_count , "Current step count: " , count)
-                #self.N[pos_y][pos_x][action-1] += 1
-                #self.Q[pos_y][pos_x][action-1] += ((self.calcReward(status) - self.Q[pos_y][pos_x][action-1])
-                #                                   * (1.0 / self.N[pos_y][pos_x][action-1]))
                 self.calcNewQ(status, action, pos_y, pos_x)
                 
             print("Finished Game: ", game_count)
             game_count += 1
-            #average_reward = 1.0 / len(executed_actions)
-            #for i in range(len(executed_actions)):
-            #    y, x, action = executed_actions[i]
-            #    self.Q[y][x][action-1] += average_reward
+            average_rewards_list.append(float(sum(reward_list)) / len(reward_list))
+
+        return average_rewards_list
 
     def demonstrate(self):
 
@@ -56,6 +58,7 @@ class Agent:
         tui = Tui()
 
         while status != "GOAL":
+            time.sleep(0.05)
             y, x = self.maze.getCurrentPosition()
             tui.draw(self.maze.getMaze(), y, x)
             status = self.maze.handleMove(self.chooseAction(y, x, explore=False))
@@ -106,6 +109,13 @@ class Agent:
                 for j in range(self.Q_dimensions[1]):
                     data_writer.writerow(self.Q[i][j])
 
+    def saveAverageRewardToCSV(self, average_reward):
+
+        path = "average_reward_" + str(time.time())
+        with open(path, mode='w') as data_file:
+            data_writer = csv.writer(data_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            data_writer.writerow(average_reward)
+
     def readFromCSV(self, path):
 
         Q = []
@@ -132,16 +142,19 @@ class Agent:
 
 if __name__ == '__main__':
 
-    games = 50
+    games = 20000
     epsilon = 0.1
-    alpha = 0.5
+    alpha = 0.8
     discount = 1
     maze = Maze("maze.txt")
-    agent = Agent(maze, 4, epsilon, alpha, discount, "test")
+    agent = Agent(maze, 4, epsilon, alpha, discount)
     currentTime = time.time()
-    #agent.simulate(games)
+    average_reward = agent.simulate(games)
     print("Time to finish ", games, " games in min.: ", (time.time() - currentTime)/60 )
-    agent.demonstrate()
+
+    agent.saveAverageRewardToCSV(average_reward)
+    
+    #agent.demonstrate()
     #agent.saveQtoCSV("test")
 
             
