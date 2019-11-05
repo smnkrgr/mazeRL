@@ -58,7 +58,6 @@ class qAgent:
         tui = Tui()
 
         while status != "GOAL":
-            time.sleep(0.05)
             y, x = self.maze.getCurrentPosition()
             tui.draw(self.maze.getMaze(), y, x)
             status = self.maze.handleMove(self.chooseAction(y, x, explore=False))
@@ -142,19 +141,19 @@ class qAgent:
 
 if __name__ == '__main__':
 
-    games = 20000
+    games = 5000
     epsilon = 0.1
-    alpha = 0.8
+    alpha = 0.3
     discount = 1
     maze = Maze("maze_levels/maze.txt")
-    agent = qAgent(maze, 4, epsilon, alpha, discount)
+    agent = qAgent(maze, 4, epsilon, alpha, discount, q_path="q_after_5000.csv")
     currentTime = time.time()
-    average_reward = agent.simulate(games)
+    #average_reward = agent.simulate(games)
     print("Time to finish ", games, " games in min.: ", (time.time() - currentTime)/60 )
 
-    agent.saveAverageRewardToCSV(average_reward)
+    #agent.saveAverageRewardToCSV(average_reward)
     
-    #agent.demonstrate()
-    #agent.saveQtoCSV("test")
+    agent.demonstrate()
+    #agent.saveQtoCSV("q_after_5000.csv")
 
             
