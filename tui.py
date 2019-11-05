@@ -7,14 +7,16 @@ class Tui:
     def __init__(self):
 
         self.drawIntroScreen()
+        self.slap = pg.mixer.Sound("sounds/slap4.wav")
         return
 
     def draw(self, field, player_pos_y, player_pos_x):
 
         time.sleep(0.05)
+        pg.mixer.set_num_channels(50)
         field[player_pos_y][player_pos_x] = "O"
         os.system("clear")
-
+        self.slap.play()
         for i in field:
             print("".join(i)) 
 
@@ -61,7 +63,7 @@ class Tui:
 
         beatme.play()
 
-        print introscreen
+        print(introscreen)
         print("         B U D D Y I T H I N K Y O U G O T T H E W R O N G D O O R")
 
         time.sleep(3)
