@@ -4,7 +4,7 @@ import csv
 import random
 import numpy as np
 import time
-
+import copy
 
 class GeneticAgent:
 
@@ -31,6 +31,84 @@ class GeneticAgent:
 
         return pop
 
+    def softmaxDistribution(self):
+
+        distribution = []
+
+        for i in range(len(self.fitness)):
+            a = math.exp(self.fitness[i])
+            # b ist eine eule
+	    b = 0.0
+	    for i in range(len(self.fitness)):
+	        b += math.exp(self.fitness[i])
+
+            distribution.append(a / b)
+
+        return distribution 
+
+    def distributeGenotype(self, softmax):
+
+        distribution = []
+        equal_sized_piece = 1.0/len(self.population)
+        i = 0
+        
+        for value in softmax:
+            if value > equal_sized_piece:
+                for i in range(int(value/equal_sized_piece)):
+                    distribution.append(self.population[i])
+            i += 1
+
+        if len(self.population) => len(distribution):
+            for i in range(len(self.population) - len(distribution)):
+                distribution.append(self.population[np.argmax(softmax)])
+        else:
+            print("Check distributeGenotype again you fucking idiot")
+            exit()
+
+        return distribution
+        
+    def crossGenotypes(self, genotype):
+
+        new_population = []
+        
+        for i in range(len(self.population)):
+            parent_a = genotype[i]
+            parent_b = random.choice(genotype)
+            offspring = []
+
+            crossover_point = random.randint(0, len(parent_a))
+
+            for i in range(len(parent_a)):
+                if random.random() < self.epsilon: offspring.append(random.randint(100))  
+                elif i < crossover_point: offspring.append(parent_a[i])
+                else: offspring.append(parent_b[i])
+
+            new_population.append(offspring)
+
+        return new_population
+                
+    def generateNewGeneration(self):
+
+        softmax_fitness = self.softmaxDistribution()
+        genotype_distribution = self.distributeGenotype(softmax_fitness)
+        self.population = self.crossGenotypes(genotype_distribution)
+        
+    def simulate(self, games = 1):
+
+        game_count = 0
+        average_fitness = []
+        
+        for i in range(games):
+
+            game_count += 1
+            print("Start Game: ", game_count)
+
+            for i in range(len(self.population)):
+
+                status = "OK"
+                # CONTINUE HERE
+        return average_fitness
+    
     def calcFitness(self):
 
         for i in range(len(self.population)):
@@ -78,6 +156,6 @@ class GeneticAgent:
         
         return population
 
-    
-                
-         
+if __name__ == "__main__":
+
+    geneAgent = GeneticAgent()
