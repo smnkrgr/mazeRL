@@ -34,8 +34,8 @@ class Maze:
             
         if self.current_position_y == self.goal_position[0] and self.current_position_x == self.goal_position[1]:
             status = "GOAL"
-            self.current_position_y = self.start_y
-            self.current_position_x = self.start_x            
+            self.resetMaze()
+            
         return status
 
     def checkLegalMove(self, pos_y, pos_x):
@@ -70,6 +70,12 @@ class Maze:
             for j in range(len(self.maze[0])):
                 if self.maze[i][j] == char:
                     return i, j
+
+    def resetMaze(self):
+
+        self.current_position_y = self.start_y
+        self.current_position_x = self.start_x
+        return
 
     def setStartingPosition(self):
 

@@ -5,9 +5,10 @@ import random
 import numpy as np
 import time
 
+
 class qAgent:
 
-    def __init__(self, maze, actions, epsilon, alpha, discount, q_path = None, n_path = None):
+    def __init__(self, maze, actions, epsilon, alpha, discount, q_path=None, n_path=None):
         
         self.maze = maze
         self.Q_dimensions = [len(self.maze.getMaze()), len(self.maze.getMaze()[0]), actions] 
@@ -42,8 +43,8 @@ class qAgent:
                 reward_list.append(self.calcReward(status))
 
                 count += 1
-                if (count%100000 == 0):
-                    print("X: ", pos_x, "Y: " , pos_y,"Game No.: " , game_count , "Current step count: " , count)
+                if (count % 100000 == 0):
+                    print("X: ", pos_x, "Y: ", pos_y, "Game No.: ", game_count, "Current step count: ", count)
                 self.calcNewQ(status, action, pos_y, pos_x)
                 
             print("Finished Game: ", game_count)
@@ -64,19 +65,21 @@ class qAgent:
             
     def calcReward(self, status):
 
-        if status == "OK": return 0
-        elif status == "WALL": return -1
-        elif status == "GOAL": return 100
+        if status == "OK":
+            return 0
+        elif status == "WALL":
+            return -1
+        elif status == "GOAL":
+            return 100
 
     def calcNewQ(self, status, action, pos_y, pos_x):
     
-        current_y,current_x = self.maze.getCurrentPosition()
+        current_y, current_x = self.maze.getCurrentPosition()
         highestScoreNextStep = self.Q[current_y][current_x][self.chooseAction(current_y, current_x, explore=False) - 1]
         
         self.Q[pos_y][pos_x][action-1] = (1-self.alpha) * self.Q[pos_y][pos_x][action-1] + self.alpha  * ( self.calcReward(status) + self.discount * highestScoreNextStep)
         
-
-    def chooseAction(self, y, x, explore = True):
+    def chooseAction(self, y, x, explore=True):
         
         if explore and random.random() < self.epsilon:
             return random.randrange(4) + 1
