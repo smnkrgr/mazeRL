@@ -12,11 +12,11 @@ class Tui:
 
     def draw(self, field, player_pos_y, player_pos_x):
 
-        time.sleep(0.05)
+        time.sleep(0.02)
         pg.mixer.set_num_channels(50)
         field[player_pos_y][player_pos_x] = "O"
         os.system("clear")
-        self.slap.play()
+#       self.slap.play()
         for i in field:
             print("".join(i)) 
 

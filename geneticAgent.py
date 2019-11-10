@@ -29,7 +29,10 @@ class GeneticAgent:
         pop = []
 
         for i in range(size):
-            pop.append([random.randrange(100)] * self.steps)
+            genotype = []
+            for j in range(self.steps):
+                genotype.append(random.randrange(100))
+            pop.append(genotype)
 
         return pop
 
@@ -43,7 +46,6 @@ class GeneticAgent:
             
         for genotype_fitness in self.fitness:
             distribution.append(math.exp(genotype_fitness)/sum_exp_fitness) 
-
         return distribution 
 
     def distributeGenotype(self, softmax):
@@ -53,45 +55,50 @@ class GeneticAgent:
         i = 0
         
         for value in softmax:
-            if value > equal_sized_piece:
-                for i in range(int(value/equal_sized_piece)):
+            if value >= equal_sized_piece:
+                for j in range(int(value/equal_sized_piece)):
                     distribution.append(self.population[i])
             i += 1
 
         if len(self.population) >= len(distribution):
             for i in range(len(self.population) - len(distribution)):
                 distribution.append(self.population[np.argmax(softmax)])
-        else:
-            print("Check distributeGenotype again you fucking idiot")
-            exit()
+        #else:
+        #    print("Check distributeGenotype again you fucking idiot")
+        #    exit()
 
         return distribution
         
-    def crossGenotypes(self, genotype):
+    def crossGenotypes(self, genotype, avg_steps):
 
         new_population = []
+        avg_corssover_point_list = []
         
         for i in range(len(self.population)):
             parent_a = genotype[i]
             parent_b = random.choice(genotype)
             offspring = []
 
-            crossover_point = random.randint(0, len(parent_a))
-
+            crossover_point = np.random.normal(loc=avg_steps/2, scale=avg_steps/6)
+            #crossover_point = random.randint(0, len(parent_a))
+            avg_corssover_point_list.append(crossover_point)
+            
             for i in range(len(parent_a)):
-                if random.random() < self.epsilon: offspring.append(random.randrange(100))  
-                elif i < crossover_point: offspring.append(parent_a[i])
+                #if random.random() < self.epsilon: offspring.append(random.randrange(100))  
+                if i < crossover_point: offspring.append(parent_a[i])
                 else: offspring.append(parent_b[i])
-
+            offspring[random.randrange(self.steps)] = random.randrange(100)
             new_population.append(offspring)
 
+        avg_corssover_point = np.mean(avg_corssover_point_list)
+        print("Average crossover_point: ", avg_corssover_point)
         return new_population
                 
-    def generateNewGeneration(self):
+    def generateNewGeneration(self, avg_steps):
 
         softmax_fitness = self.softmaxDistribution()
         genotype_distribution = self.distributeGenotype(softmax_fitness)
-        self.population = self.crossGenotypes(genotype_distribution)
+        self.population = self.crossGenotypes(genotype_distribution, avg_steps)
         
     def simulate(self, games=1):
 
@@ -101,17 +108,20 @@ class GeneticAgent:
 
             print("Start Game: ", game)
             individual_number = 0
+            avg_steps_list = []
                                 
             for genotype in self.population:
-                self.runGameForIndividual(genotype, individual_number)
+                avg_steps_list.append(self.runGameForIndividual(genotype, individual_number))
                 individual_number += 1
                 
+            avg_steps = np.mean(avg_steps_list)
+            print("Average step size: ", avg_steps)
             self.calcFitness()
             average_fitness.append(np.mean(self.fitness))
             print("Finished game with average population fitness: ", average_fitness[-1])
 
             print("Crossing population for new generation...")
-            self.generateNewGeneration()
+            self.generateNewGeneration(avg_steps)
             
         return average_fitness
     
@@ -134,9 +144,9 @@ class GeneticAgent:
             self.finishing_positions[genotype_number][1] = self.maze.getCurrentPosition()[1]
             self.finishing_positions[genotype_number][2] = steps
             self.maze.resetMaze()
-
-        return
-
+        
+        return steps
+ 
     def calcFitness(self):
 
         for i in range(len(self.population)):
@@ -147,9 +157,8 @@ class GeneticAgent:
 
             # bonus for reaching the goal to encourage shorter paths
             if distance == 0: 
-                bonus = (self.steps - self.finishing_positions[i][2]) / self.steps * 100
-                print("Goal reached")
-            else: bonus = 0           
+                bonus = (self.steps - self.finishing_positions[i][2]) / self.steps * 700
+            else: bonus = -100           
 
             self.fitness[i] = 1.0/(distance + 1) + bonus
             
@@ -186,10 +195,24 @@ class GeneticAgent:
         
         return population
 
+    def demonstrate(self):
+
+        status = "OK"
+        tui = Tui()
+        best_genotype = self.population[np.argmax(self.fitness)]
+        counter = 0
+        
+        while status != "GOAL":
+            y, x = self.maze.getCurrentPosition()
+            tui.draw(self.maze.getMaze(), y, x)
+            status = self.maze.handleMove((best_genotype[counter] % self.maze_dimensions[2]) + 1 )
+            counter += 1
+            if counter >= self.steps:
+                break
 
 if __name__ == "__main__":
 
     maze = Maze("maze_levels/maze.txt")
-    geneAgent = GeneticAgent(maze=maze, actions=4, epsilon=0.05, population_size=300, steps=1000)
-    geneAgent.simulate(games=1000)
-
+    geneAgent = GeneticAgent(maze=maze, actions=4, epsilon=0.05, population_size=1000, steps=1500)
+    geneAgent.simulate(games=500)
+    geneAgent.demonstrate()
